@@ -8,11 +8,11 @@
 
 ## Task
 
-**Description:** _[Filled by Orchestrator from the task input]_
+**Description:** Increase Pollard Kangaroo search interval from 125-bit to 256-bit, improve speed and correctness across GPU targets.
 
-**Started:** _[ISO-8601 timestamp]_
+**Started:** 2026-02-26T12:14:49Z
 
-**Branch:** _[git branch name]_
+**Branch:** copilot/increase-search-interval-to-256bit
 
 ---
 
@@ -22,14 +22,14 @@ _[Orchestrator fills this after routing rule evaluation]_
 
 ```
 [ ] Orchestrator
-[ ] Architect          — trigger: ...
+[ ] Architect          — trigger: New feature / interval extension
 [ ] Coder
-[ ] QA                 — trigger: ...
-[ ] Security           — trigger: ...
-[ ] Performance        — trigger: ...
-[ ] DX-CI              — trigger: ...
-[ ] Docs               — trigger: ...
-[ ] Refactor           — trigger: ...
+[ ] QA                 — trigger: Behaviour change requires regression coverage
+[ ] Security           — trigger: not applicable
+[ ] Performance        — trigger: Hot path speed requirements
+[ ] DX-CI              — trigger: not applicable
+[ ] Docs               — trigger: not applicable
+[ ] Refactor           — trigger: not applicable
 [x] Auditor            — always last
 ```
 
@@ -252,4 +252,4 @@ TIMESTAMP:
 
 | Timestamp | Event |
 |---|---|
-| | Task started |
+| 2026-02-26T12:14:49Z | Task started; routed chain: Orchestrator → Architect → QA → Coder → Performance → Auditor |
