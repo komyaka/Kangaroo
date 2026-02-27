@@ -189,14 +189,21 @@ _[Filled by Docs agent if triggered]_
 ### Changes Made
 | File | Change | Description |
 |---|---|---|
-| | | |
+| `README.md` | replaced | Full rewrite: comprehensive project documentation for Kangaroo v2.2 — algorithm explanation, requirements, CPU/GPU build instructions, input file format, CLI options table, usage examples, work-file management, distributed mode, Bitcoin puzzle context, performance notes, license |
+
+### Public Interface Changes Documented
+- [x] All new/changed CLI flags documented in README (full options table).
+- [x] All new/changed env variables added to `.env.example` — N/A (no env variables used).
+- [x] All breaking changes have a migration guide — N/A (no breaking changes; initial docs write).
+- [x] CHANGELOG entry added — N/A (no CHANGELOG.md present in repository).
 
 ### Docs Status
 ```
-STATUS: IN_PROGRESS
+STATUS: VERIFIED
 AGENT: docs
 PHASE: documentation
-TIMESTAMP: 
+TIMESTAMP: 2025-01-30T00:00:00Z
+DETAILS: README.md replaced with comprehensive Kangaroo v2.2 documentation (551 lines)
 ```
 
 ---
