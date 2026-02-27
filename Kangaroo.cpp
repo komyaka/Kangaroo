@@ -313,7 +313,7 @@ bool Kangaroo::AddToTable(Int *pos,Int *dist,uint32_t kType) {
 
 }
 
-bool Kangaroo::AddToTable(uint64_t h,int128_t *x,int128_t *d) {
+bool Kangaroo::AddToTable(uint64_t h,int256_t *x,int256_t *d) {
 
   int addStatus = hashTable.Add(h,x,d);
   if(addStatus== ADD_COLLISION) {
@@ -747,7 +747,7 @@ void Kangaroo::CreateJumpTable() {
   int jumpBit = rangePower / 2 + 1;
 #endif
 
-  if(jumpBit > 128) jumpBit = 128;
+  if(jumpBit > 255) jumpBit = 255;
   int maxRetry = 100;
   bool ok = false;
   double distAvg;
@@ -880,6 +880,10 @@ void Kangaroo::InitRange() {
   rangeWidth.Sub(&rangeStart);
   rangePower = rangeWidth.GetBitLength();
   ::printf("Range width: 2^%d\n",rangePower);
+  if(rangePower > 256) {
+    ::printf("Error: range width exceeds 256 bits (got 2^%d)\n",rangePower);
+    ::exit(1);
+  }
   rangeWidthDiv2.Set(&rangeWidth);
   rangeWidthDiv2.ShiftR(1);
   rangeWidthDiv4.Set(&rangeWidthDiv2);

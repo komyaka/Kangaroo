@@ -409,10 +409,12 @@ void GPUEngine::SetKangaroos(Int *px,Int *py,Int *d) {
         if(idx % 2 == WILD) dOff.ModAddK1order(&wildOffset);
         inputKangarooPinned[g * strideSize + t + 8 * nbThreadPerGroup] = dOff.bits64[0];
         inputKangarooPinned[g * strideSize + t + 9 * nbThreadPerGroup] = dOff.bits64[1];
+        inputKangarooPinned[g * strideSize + t + 10 * nbThreadPerGroup] = dOff.bits64[2];
+        inputKangarooPinned[g * strideSize + t + 11 * nbThreadPerGroup] = dOff.bits64[3];
 
 #ifdef USE_SYMMETRY
         // Last jump
-        inputKangarooPinned[t + 10 * nbThreadPerGroup] = (uint64_t)NB_JUMP;
+        inputKangarooPinned[t + 12 * nbThreadPerGroup] = (uint64_t)NB_JUMP;
 #endif
 
         idx++;
@@ -474,6 +476,8 @@ void GPUEngine::GetKangaroos(Int *px,Int *py,Int *d) {
         dOff.SetInt32(0);
         dOff.bits64[0] = inputKangarooPinned[g * strideSize + t + 8 * nbThreadPerGroup];
         dOff.bits64[1] = inputKangarooPinned[g * strideSize + t + 9 * nbThreadPerGroup];
+        dOff.bits64[2] = inputKangarooPinned[g * strideSize + t + 10 * nbThreadPerGroup];
+        dOff.bits64[3] = inputKangarooPinned[g * strideSize + t + 11 * nbThreadPerGroup];
         if(idx % 2 == WILD) dOff.ModSubK1order(&wildOffset);
         d[idx].Set(&dOff);
 
@@ -528,11 +532,15 @@ void GPUEngine::SetKangaroo(uint64_t kIdx,Int *px,Int *py,Int *d) {
   cudaMemcpy(inputKangaroo + (b * blockSize + g * strideSize + t + 8 * nbThreadPerGroup),inputKangarooPinned,8,cudaMemcpyHostToDevice);
   inputKangarooPinned[0] = dOff.bits64[1];
   cudaMemcpy(inputKangaroo + (b * blockSize + g * strideSize + t + 9 * nbThreadPerGroup),inputKangarooPinned,8,cudaMemcpyHostToDevice);
+  inputKangarooPinned[0] = dOff.bits64[2];
+  cudaMemcpy(inputKangaroo + (b * blockSize + g * strideSize + t + 10 * nbThreadPerGroup),inputKangarooPinned,8,cudaMemcpyHostToDevice);
+  inputKangarooPinned[0] = dOff.bits64[3];
+  cudaMemcpy(inputKangaroo + (b * blockSize + g * strideSize + t + 11 * nbThreadPerGroup),inputKangarooPinned,8,cudaMemcpyHostToDevice);
 
 #ifdef USE_SYMMETRY
   // Last jump
   inputKangarooPinned[0] = (uint64_t)NB_JUMP;
-  cudaMemcpy(inputKangaroo + (b * blockSize + g * strideSize + t + 10 * nbThreadPerGroup),inputKangarooPinned,8,cudaMemcpyHostToDevice);
+  cudaMemcpy(inputKangaroo + (b * blockSize + g * strideSize + t + 12 * nbThreadPerGroup),inputKangarooPinned,8,cudaMemcpyHostToDevice);
 #endif
 
 }
@@ -561,8 +569,8 @@ void GPUEngine::SetParams(uint64_t dpMask,Int *distance,Int *px,Int *py) {
   this->dpMask = dpMask;
 
   for(int i=0;i< NB_JUMP;i++)
-    memcpy(jumpPinned + 2*i,distance[i].bits64,16);
-  cudaMemcpyToSymbol(jD,jumpPinned,jumpSize/2);
+    memcpy(jumpPinned + 4*i,distance[i].bits64,32);
+  cudaMemcpyToSymbol(jD,jumpPinned,jumpSize);
   cudaError_t err = cudaGetLastError();
   if(err != cudaSuccess) {
     printf("GPUEngine: SetParams: Failed to copy to constant memory: %s\n",cudaGetErrorString(err));
@@ -654,7 +662,7 @@ bool GPUEngine::Launch(std::vector<ITEM> &hashFound,bool spinWait) {
     uint32_t *itemPtr = outputItemPinned + (i*ITEM_SIZE32 + 1);
     ITEM it;
 
-    it.kIdx = *((uint64_t*)(itemPtr + 12));
+    it.kIdx = *((uint64_t*)(itemPtr + 16));
 
     uint64_t *x = (uint64_t *)itemPtr;
     it.x.bits64[0] = x[0];
@@ -666,8 +674,8 @@ bool GPUEngine::Launch(std::vector<ITEM> &hashFound,bool spinWait) {
     uint64_t *d = (uint64_t *)(itemPtr + 8);
     it.d.bits64[0] = d[0];
     it.d.bits64[1] = d[1];
-    it.d.bits64[2] = 0;
-    it.d.bits64[3] = 0;
+    it.d.bits64[2] = d[2];
+    it.d.bits64[3] = d[3];
     it.d.bits64[4] = 0;
     if(it.kIdx % 2 == WILD) it.d.ModSubK1order(&wildOffset);
 
